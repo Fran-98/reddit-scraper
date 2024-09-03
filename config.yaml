@@ -1,0 +1,7 @@
+sub: 'DerechoGenial'
+
+# To filter by user flair in comments (useful for some subreddits) it uses soft matching, so there is no need to be exact
+allowed_flairs: 
+- Moderador
+- Abogado
+- Estudiante
