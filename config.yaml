@@ -1,9 +1,5 @@
-subreddit: 'DerechoGenial'
-
 # To filter by user flair in comments (useful for some subreddits)
 allowed_flairs: 
-- Moderador - Abogado
-- Abogado no verificado
-- Estudiante no verificado
-- Abogado verificado
-- Estudiante verificado
+- 'Ultra Helpful Contributor'
+- 'Servant to cats'
+- 'Super Contributor'
