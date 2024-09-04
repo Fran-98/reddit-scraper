@@ -1,7 +1,9 @@
-sub: 'DerechoGenial'
+subreddit: 'DerechoGenial'
 
-# To filter by user flair in comments (useful for some subreddits) it uses soft matching, so there is no need to be exact
+# To filter by user flair in comments (useful for some subreddits)
 allowed_flairs: 
-- Moderador
-- Abogado
-- Estudiante
+- Moderador - Abogado
+- Abogado no verificado
+- Estudiante no verificado
+- Abogado verificado
+- Estudiante verificado

@@ -1,9 +1,17 @@
 import praw
 import os
-import pprint
+import yaml
+import json
+from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()  # take environment variables from .env.
+
+with open('config.yaml', 'r') as file:
+    config = yaml.safe_load(file)
 
 client_id = os.environ['REDDIT_CLIENT_ID']
-client_secret = os.environ['REDDIT_SECRET']
+client_secret = os.environ['REDDIT_CLIENT_SECRET']
 user_agent = os.environ['REDDIT_USER_AGENT']
 
 reddit = praw.Reddit(
@@ -12,14 +20,47 @@ reddit = praw.Reddit(
     user_agent=user_agent,
 )
 
-url = "https://www.reddit.com/r/DerechoGenial/comments/1f7xevt/me_puedo_negar_a_tener_que_hacerme_responsable_de/"
-submission = reddit.submission(url=url)
+subreddit = reddit.subreddit(config['subreddit'])
+
+posts = subreddit.top(time_filter = "all", limit = None)
 
 
-for top_level_comment in submission.comments:
-        print(top_level_comment.author_flair_text)
+def scrap_comments(submission):
+        comments = []
+        for top_level_comment in submission.comments:
+                if top_level_comment.author_flair_text in config['allowed_flairs']:
+                        comment = {
+                        'user': top_level_comment.author.name,
+                        'flair': top_level_comment.author_flair_text,
+                        'comment_id': top_level_comment.id,
+                        'text': top_level_comment.body
+                        }
+                        comments.append(comment)
+
+        data = {
+               'title': submission.title,
+               'id': submission.id,
+               'created': submission.created_utc,
+               'url': submission.url,
+               'text': submission.selftext,
+               'comments': comments
+        }
+        return data
+
+data = []
+i = 0
+for post in posts:
+        submission = reddit.submission(post)
+        scraped = scrap_comments(submission)
+        i += 1
+        print(i)
+        print(scraped['title'], datetime.fromtimestamp(scraped['created']))
+        data.append(scraped)
 
 
+with open(f"{config['subreddit']}.jsonl", 'w') as f:
+    for item in data:
+        f.write(json.dumps(item) + "\n")
 
 """ Ejemplo comment
 {'_fetched': True,
