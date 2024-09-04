@@ -1,4 +1,3 @@
-import praw
 import json
 from datetime import datetime
 from tqdm import tqdm
@@ -8,7 +7,7 @@ def parse_submissions(path: str):
         with open(path, encoding='utf-8', mode='r') as file:
                 for line in file.readlines():
                         post = json.loads(line)
-                        posts.append(post['id'])
+                        posts.append(post)
         return posts
 
 def parse_comments(path: str):
@@ -25,41 +24,40 @@ def parse_comments(path: str):
 
 def scrap_comments(submission, all_comments:dict , config: dict):
                 comments = []
-                if submission.id in all_comments.keys():
-
-                        for top_level_comment in submission.comments:
-                                if top_level_comment.author_flair_text in config['allowed_flairs']:
+                if submission['id'] in all_comments.keys():
+                        for post_comment in all_comments[submission['id']]:
+                                if post_comment['author_flair_text'] in config['allowed_flairs']:
                                         comment = {
-                                        'user': top_level_comment.author.name,
-                                        'flair': top_level_comment.author_flair_text,
-                                        'comment_id': top_level_comment.id,
-                                        'text': top_level_comment.body
+                                        'user': post_comment['author'],
+                                        'flair': post_comment['author_flair_text'],
+                                        'comment_id': post_comment['id'],
+                                        'text': post_comment['body']
                                         }
                                         comments.append(comment)
 
                         data = {
-                                'title': submission.title,
-                                'id': submission.id,
-                                'created': submission.created_utc,
-                                'url': submission.url,
-                                'text': submission.selftext,
+                                'title': submission['title'],
+                                'id': submission['id'],
+                                'created': submission['created_utc'],
+                                'url': submission['url'],
+                                'text': submission['selftext'],
                                 'comments': comments
                         }
                         return data
                 else:
                         return None
 
-def scrap_sub_file(reddit: praw.Reddit, config: dict, path_submissions: str, path_comments: str):
+def scrap_sub_file(config: dict, path_submissions: str, path_comments: str):
         # We need to parse the data files
         posts = parse_submissions(path_submissions)
         comments = parse_comments(path_comments)
-        subreddit_name = reddit.submission(posts[1]).subreddit
+        subreddit_name = posts[1]['subreddit']
 
         data = []
 
         for post in tqdm(posts, position=0):
-                submission = reddit.submission(post)
-                scraped = scrap_comments(submission, comments, config)
+                #submission = reddit.submission(post)
+                scraped = scrap_comments(post, comments, config)
                 if scraped is not None:
                         tqdm.write(f"{scraped['title']} - {datetime.fromtimestamp(scraped['created'])}")
                         data.append(scraped)

@@ -1,6 +1,7 @@
 import praw
 from datetime import datetime
 import json
+import os
 
 def scrap_comments(submission, config: dict):
         comments = []
@@ -24,8 +25,18 @@ def scrap_comments(submission, config: dict):
         }
         return data
 
-def scrap_sub_api(reddit: praw.Reddit, subreddit_name: str, config: dict):
+def scrap_sub_api(subreddit_name: str, config: dict):
        
+        client_id = os.environ['REDDIT_CLIENT_ID']
+        client_secret = os.environ['REDDIT_CLIENT_SECRET']
+        user_agent = os.environ['REDDIT_USER_AGENT']
+
+        reddit = praw.Reddit(
+        client_id=client_id,
+        client_secret=client_secret,
+        user_agent=user_agent,
+        )
+
         subreddit = reddit.subreddit(subreddit_name)
 
         posts = subreddit.top(time_filter = "all", limit = None)

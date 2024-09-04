@@ -1,6 +1,4 @@
-import os
 import yaml
-import praw
 import argparse
 from dotenv import load_dotenv
 from from_api import scrap_sub_api
@@ -11,15 +9,6 @@ load_dotenv()  # take environment variables from .env.
 with open('config.yaml', 'r') as file:
     config = yaml.safe_load(file)
 
-client_id = os.environ['REDDIT_CLIENT_ID']
-client_secret = os.environ['REDDIT_CLIENT_SECRET']
-user_agent = os.environ['REDDIT_USER_AGENT']
-
-reddit = praw.Reddit(
-    client_id=client_id,
-    client_secret=client_secret,
-    user_agent=user_agent,
-)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Scrap Sub-Reddit Script By Fran98')
@@ -39,6 +28,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.mode == 'file':
-        scrap_sub_file(reddit, config, args.path_submissions, args.path_comments)
+        scrap_sub_file(config, args.path_submissions, args.path_comments)
     elif args.mode == 'api':
-        scrap_sub_api(reddit, args.subreddit, config)
+        scrap_sub_api(args.subreddit, config)

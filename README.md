@@ -1,5 +1,5 @@
 # Reddit Scraper
-A basic script to scrap all the information inside a sub-reddit.
+A basic script to scrap posts and comments inside a sub-reddit.
 
 ## Modes
 
